@@ -13,10 +13,30 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['middleware' => ['web']], function () {
-    Route::post('login','Auth\LoginController@login');  
-    Route::post('register','Auth\RegisterController@register');  
-    Route::post('logout','Auth\LoginController@logout');
-    Route::post('password/email','Auth\ForgotPasswordController@sendResetLinkEmail'); 
-    Route::post('password/reset','Auth\ResetPasswordController@reset');
+Route::post('register', 'AuthController@register');
+Route::post('login', 'AuthController@login');
+Route::get('refreshToken', 'AuthController@refreshToken');
+Route::post('recover', 'AuthController@recover');
+
+Route::group(['middleware' => ['jwt.auth']], function() {
+    Route::get('logout', 'AuthController@logout');
+
+    Route::resource('posts', 'PostController');
+    Route::resource('users', 'UserController');
+
+    Route::get('/me', [
+      'uses' => 'UserController@me',
+      'as'   => 'users.me',
+    ]);
+
+    Route::group(['prefix' => 'posts'], function() {
+      Route::get('/{post}/relationships/user', [
+        'uses' => 'PostRelationshipController@user',
+        'as'   => 'posts.relationships.user',
+      ]);
+      Route::get('/{post}/user', [
+        'uses' => 'PostRelationshipController@user',
+        'as'   => 'posts.user',
+      ]);
+    });
 });
