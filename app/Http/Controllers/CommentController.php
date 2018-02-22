@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Comment;
+use JWTAuth;
+use Validator;
 use App\Http\Resources\CommentResource;
 use App\Http\Resources\CommentsResource;
 use Illuminate\Http\Request;
@@ -37,7 +39,26 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $commentRequest = $request->only('post_id', 'content');
+
+        $rules = [
+            'post_id' => 'required',
+            'content' => 'required'
+        ];
+
+        $validator = Validator::make($commentRequest, $rules);
+
+        if($validator->fails()) {
+            return response()->json(['success'=> false, 'error'=> $validator->messages()]);
+        }
+
+        $comment = Comment::create([
+            'post_id' => $request->post_id,
+            'content' => $request->content,
+            'user_id' => JWTAuth::user()->id,
+        ]);
+
+        return new CommentResource($comment);
     }
 
     /**
