@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Post;
 use Validator;
 use JWTAuth;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\PostsResource;
+use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
@@ -18,7 +18,7 @@ class PostController extends Controller
      */
     public function index(Request $request)
     {
-        $posts = Post::with(['user', 'comments.user']);
+        $posts = Post::with(['user', 'comments.user'])->orderBy('created_at', 'desc');
         $user_id = $request->user_id;
         return $user_id
             ? new PostsResource($posts->where('user_id', $user_id)->paginate())
