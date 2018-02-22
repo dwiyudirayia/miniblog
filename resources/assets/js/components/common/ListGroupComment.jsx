@@ -19,7 +19,7 @@ class ListGroupComment extends Component {
         return (
           <ListGroupItem key={id} className="px-1 border-0 border-bottom border-gray">
             <ListGroupItemText>
-              <Link to={`users/${data.user.id}`}>
+              <Link to={`/users/${data.user.id}`}>
                 @{data.user.username}
               </Link>
               <span className="float-right">{timestamp}</span>

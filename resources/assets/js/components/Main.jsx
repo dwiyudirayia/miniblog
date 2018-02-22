@@ -130,7 +130,7 @@ class Main extends Component {
   }
 
   refresh() {
-    return axios.get('api/refreshToken')
+    return axios.get('/api/refreshToken')
       .then((response) => {
         const token = response.data.token;
         this.authenticate(token);

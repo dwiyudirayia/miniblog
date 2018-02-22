@@ -23,7 +23,7 @@ class SinglePost extends Component {
           </Col>
           <Col md="6" className="text-right">
             <span>
-              written by, <Link to={`/authors/${data.user.id}`}>@{data.user.username}</Link>
+              written by, <Link to={`/users/${data.user.id}`}>@{data.user.username}</Link>
             </span>
           </Col>
         </Row>

@@ -17,7 +17,7 @@ class ListGroupPost extends Component {
         const data = { id, ...post.attributes, user: post.relationships.user.data };
         const timestamp = moment(data.created_at, 'YYYY-MM-DD HH:mm:ss').fromNow();
         return (
-          <ListGroupItem tag={Link} to={`posts/${id}`} action key={id} className="px-1 border-0 border-bottom border-gray">
+          <ListGroupItem tag={Link} to={`/posts/${id}`} action key={id} className="px-1 border-0 border-bottom border-gray">
             <ListGroupItemText>
               @{data.user.username}
               <span className="float-right">{timestamp}</span>

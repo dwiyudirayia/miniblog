@@ -6,6 +6,7 @@ import Navbar from '../../common/Navbar';
 import Loader from '../../common/Loader';
 import SinglePost from '../../common/SinglePost';
 import ListGroupComment from '../../common/ListGroupComment';
+import CommentForm from '../../common/CommentForm';
 import Error404 from '../../public/errors/404';
 
 class PostDetail extends Component {
@@ -20,6 +21,8 @@ class PostDetail extends Component {
       commentsIsLoading: true,
       postIsLoading: true
     }
+
+    this.handleCommented = this.handleCommented.bind(this);
   }
 
   componentWillMount() {
@@ -56,8 +59,18 @@ class PostDetail extends Component {
       });
   }
 
+  handleCommented(comment) {
+    const { data } = comment;
+    const { comments } = this.state;
+    comments.push(data);
+
+    this.setState({
+      comments
+    });
+  }
+
   render() {
-    const { post, comments, postIsLoading, commentsIsLoading } = this.state;
+    const { id, post, comments, postIsLoading, commentsIsLoading } = this.state;
     const { isLoading } = this.props;
     const totalComments = comments.length;
 
@@ -74,6 +87,11 @@ class PostDetail extends Component {
               <SinglePost
                 post={post}
                 isLoading={postIsLoading} />
+              <CommentForm
+                onCommented={this.handleCommented}
+                relatedName="post_id"
+                relatedId={id}
+                isLoading={commentsIsLoading} />
               <ListGroupComment
                 comments={comments}
                 isLoading={commentsIsLoading}

@@ -102,7 +102,7 @@ class Login extends Component {
                               onChange={this.onChange}
                               type="checkbox" name="remember" />{' '}
                             Remember Me
-                      </Label>
+                          </Label>
                         </Col>
                       </FormGroup>
 
@@ -114,11 +114,11 @@ class Login extends Component {
                             <Col sm={5}>
                               <Button type="submit" color="primary" block>Login</Button>
                             </Col>
-                            <Col sm={7}>
+                            {/* <Col sm={7}>
                               <li className="btn btn-link float-left">
                                 <Link to="forgotpassword">Forgot Your Password?</Link>
                               </li>
-                            </Col>
+                            </Col> */}
                           </Row>
                         </Col>
                       </FormGroup>
