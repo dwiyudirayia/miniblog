@@ -74,11 +74,16 @@ class EditorComponent extends Component {
     const editor = (
       <div>
         <FormGroup className="text-left">
-          <Label for="title" size="lg">Write new post</Label>
+          <Label for="title" className="d-block border-bottom border-gray">Write new post</Label>
           <Input
+            className="mt-3"
             value={this.state.title}
             onChange={this.onChange}
-            type="text" name="title" id="title" placeholder="Enter Title" bsSize="lg" />
+            type="text"
+            name="title"
+            id="title"
+            placeholder="Enter Title"
+            bsSize="md" />
         </FormGroup>
         <Editor
           editorState={this.state.editorState}
