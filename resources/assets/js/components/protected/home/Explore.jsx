@@ -53,8 +53,8 @@ class Explore extends Component {
               <ListGroupPost
                 isLoading={isLoading}
                 posts={posts}
-                noPostText={'Sorry, you have no posts yet.'}
-                title={'Your posts'} />
+                noPostText="Sorry, there are no posts yet."
+                title="Explore posts" />
             </Col>
           </Row>
         </Container>
