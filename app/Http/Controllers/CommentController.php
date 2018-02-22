@@ -2,27 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Comment;
+use App\Http\Resources\CommentResource;
+use App\Http\Resources\CommentsResource;
 use Illuminate\Http\Request;
-use App\Post;
-use Validator;
-use JWTAuth;
-use App\Http\Resources\PostResource;
-use App\Http\Resources\PostsResource;
 
-class PostController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $posts = Post::with(['user', 'comments.user']);
-        $user_id = $request->user_id;
-        return $user_id
-            ? new PostsResource($posts->where('user_id', $user_id)->paginate())
-            : new PostsResource($posts->paginate());
+        return new CommentsResource(Comment::with(['user'])->paginate());
     }
 
     /**
@@ -43,25 +37,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $postRequest = $request->only('title', 'content');
-
-        $rules = [
-            'title' => 'required|min:3|max:255',
-        ];
-
-        $validator = Validator::make($postRequest, $rules);
-
-        if($validator->fails()) {
-            return response()->json(['success'=> false, 'error'=> $validator->messages()]);
-        }
-
-        $post = Post::create([
-            'title' => $request->title,
-            'content' => $request->content,
-            'user_id' => JWTAuth::user()->id,
-        ]);
-
-        return new PostResource($post);
+        //
     }
 
     /**
@@ -72,8 +48,8 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::find($id);
-        return new PostResource($post);
+        $comment = Comment::find($id);
+        return new CommentResource($comment);
     }
 
     /**

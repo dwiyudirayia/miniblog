@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Uuids;
 
-class Post extends Model
+class Comment extends Model
 {
     use Uuids;
     public $incrementing = false;
@@ -16,16 +16,11 @@ class Post extends Model
      * @var array
      */
     protected $fillable = [
-        'title', 'content', 'user_id',
+        'content', 'user_id', 'post_id',
     ];
 
     public function user()
     {
         return $this->belongsTo('App\User');
-    }
-
-    public function comments()
-    {
-        return $this->hasMany('App\Comment');
     }
 }

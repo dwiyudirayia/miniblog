@@ -23,6 +23,7 @@ Route::group(['middleware' => ['jwt.auth']], function() {
 
     Route::resource('posts', 'PostController');
     Route::resource('users', 'UserController');
+    Route::resource('comments', 'CommentController');
 
     Route::get('/me', [
       'uses' => 'UserController@me',
@@ -37,6 +38,14 @@ Route::group(['middleware' => ['jwt.auth']], function() {
       Route::get('/{post}/user', [
         'uses' => 'PostRelationshipController@user',
         'as'   => 'posts.user',
+      ]);
+      Route::get('/{post}/relationships/comments', [
+        'uses' => 'PostRelationshipController@comments',
+        'as'   => 'posts.relationships.comments',
+      ]);
+      Route::get('/{post}/comments', [
+        'uses' => 'PostRelationshipController@comments',
+        'as'   => 'posts.comments',
       ]);
     });
 });
