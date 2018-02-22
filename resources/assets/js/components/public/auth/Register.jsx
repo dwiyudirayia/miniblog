@@ -31,7 +31,7 @@ class Register extends Component {
   onSubmit(e) {
     e.preventDefault();
     const { name, username, email, password, password_confirmation } = this.state;
-    axios.post('api/register', {
+    axios.post('/api/register', {
       name,
       username,
       email,

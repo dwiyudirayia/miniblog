@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import { Redirect, Link } from 'react-router-dom';
 import Navbar from '../../common/Navbar';
-import EditorComponent from '../../common/EditorComponent';
 import ListGroupPost from '../../common/ListGroupPost';
 
-class Index extends Component {
+class Explore extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,9 +19,7 @@ class Index extends Component {
   }
 
   load() {
-    const { user } = this.props;
-    const params = user !== null ? `?user_id=${user.id}` : '';
-    return axios.get(`/api/posts${params}`)
+    return axios.get(`/api/posts`)
       .then((response) => {
         const { data } = response.data;
         this.setState({
@@ -53,9 +50,6 @@ class Index extends Component {
         <Container>
           <Row className="justify-content-center">
             <Col md="8">
-              <EditorComponent
-                onPublished={this.handlePublished}
-                {...this.props} />
               <ListGroupPost
                 isLoading={isLoading}
                 posts={posts}
@@ -69,4 +63,4 @@ class Index extends Component {
   }
 }
 
-export default Index;
+export default Explore;

@@ -2,17 +2,29 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import ReactDOM from 'react-dom';
 import Index from './protected/home/Index';
+import Explore from './protected/home/Explore';
 import Login from './public/auth/Login';
 import Register from './public/auth/Register';
+import Error404 from './public/errors/404';
 
-const PrivateRoute = ({ component: Component, logout, isAuthenticated, isReady, token, user, ...rest }) => (
+import PostDetail from './protected/posts/PostDetail';
+
+const PrivateRoute = ({ component: Component, logout, isAuthenticated, isReady, isLoading, token, user, ...rest }) => (
   <Route
     {...rest}
     render={props =>
       isReady ?
         isAuthenticated
           ? (
-            <Component {...props} {...rest} logout={logout} token={token} isAuthenticated={isAuthenticated} isReady={isReady} user={user} />
+            <Component
+              {...props}
+              {...rest}
+              logout={logout}
+              token={token}
+              isAuthenticated={isAuthenticated}
+              isReady={isReady}
+              user={user}
+              isLoading={isLoading} />
           )
           : (
             <Redirect
@@ -35,7 +47,8 @@ class Main extends Component {
       isAuthenticated: false,
       token: null,
       user: null,
-      isReady: false
+      isReady: false,
+      isLoading: true
     };
     this.authenticate = this.authenticate.bind(this);
     this.refresh = this.refresh.bind(this);
@@ -43,8 +56,14 @@ class Main extends Component {
 
     // Interceptor for expired token
     axios.interceptors.response.use(response => {
+      this.setState({
+        isLoading: false
+      });
       return response;
     }, error => {
+      this.setState({
+        isLoading: false
+      });
       if (error.response.status === 401) {
         this.refresh();
       }
@@ -53,6 +72,9 @@ class Main extends Component {
 
     // Interceptor to make request with token if possible
     axios.interceptors.request.use((config) => {
+      this.setState({
+        isLoading: true
+      });
       if (this.token) {
         config.headers.Authorization = `Bearer ${this.token}`;
       }
@@ -62,36 +84,38 @@ class Main extends Component {
   }
 
   componentWillMount() {
-    if (this.token) {
-      this.authenticate(this.token);
-    }
+    this.token
+      ? this.authenticate(this.token)
+      : this.setState({
+        isReady: true
+      });
   }
 
   authenticate(token) {
-    axios.get('api/me', {
+    axios.get('/api/me', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     })
-		.then((response) => {
-      const { data } = response.data;
-      const { id } = data;
-      const user = { id, ...data.attributes };
-      this.setState({
-        user,
-        isAuthenticated: true,
-        token,
-        isReady: true
+      .then((response) => {
+        const { data } = response.data;
+        const { id } = data;
+        const user = { id, ...data.attributes };
+        this.setState({
+          user,
+          isAuthenticated: true,
+          token,
+          isReady: true
+        });
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('jwt', token);
+      })
+      .catch((error) => {
+        this.setState({
+          isReady: true
+        });
+        console.log('Error!', error);
       });
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('jwt', token);
-		})
-		.catch((error) => {
-      this.setState({
-        isReady: true
-      });
-			console.log('Error!', error);
-    });
   }
 
   logout() {
@@ -105,21 +129,21 @@ class Main extends Component {
   }
 
   refresh() {
-		return axios.get('api/refreshToken')
-		.then((response) => {
-			const token = response.data.token;
-			this.authenticate(token);
-		})
-		.catch((error) => {
-      this.logout();
-			console.log('Error!', error);
-		});
+    return axios.get('api/refreshToken')
+      .then((response) => {
+        const token = response.data.token;
+        this.authenticate(token);
+      })
+      .catch((error) => {
+        this.logout();
+        console.log('Error!', error);
+      });
   }
-  
+
   get token() {
     return localStorage.getItem('jwt');
   }
-  
+
   get user() {
     return JSON.parse(localStorage.getItem('user'));
   }
@@ -128,17 +152,15 @@ class Main extends Component {
     return (
       <Router>
         <Switch>
-          <Route exact path='/login' render={(props) => <Login authenticate={this.authenticate} isAuthenticated={this.state.isAuthenticated} {...props} />} />
-          <Route path='/register' render={(props) => <Register authenticate={this.authenticate} isAuthenticated={this.state.isAuthenticated} {...props} />} />
-          <PrivateRoute
-            path="/"
-            exact
-            component={Index}
-            logout={this.logout}
-            isAuthenticated={this.state.isAuthenticated}
-            isReady={this.state.isReady}
-            token={this.state.token}
-            user={this.state.user} />
+          <Route exact path='/login' render={(props) => <Login authenticate={this.authenticate} {...this.state} {...props} />} />
+          <Route path='/register' render={(props) => <Register authenticate={this.authenticate} {...this.state} {...props} />} />
+          <PrivateRoute path="/" exact component={Index} logout={this.logout} {...this.state} />
+          <PrivateRoute path="/explore" component={Explore} logout={this.logout} {...this.state} />
+
+          <PrivateRoute path="/posts/:postId" component={PostDetail} logout={this.logout} {...this.state} />
+
+          {/* This should be at the bottom */}
+          <Route render={(props) => <Error404 logout={this.logout} {...this.state} {...props} />} />
         </Switch>
       </Router>
     );

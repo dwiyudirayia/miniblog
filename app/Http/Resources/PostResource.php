@@ -21,6 +21,8 @@ class PostResource extends JsonResource
             'attributes' => [
                 'title' => $this->title,
                 'content' => $this->content,
+                'created_at' => (string) $this->created_at,
+                'updated_at' => (string) $this->updated_at
             ],
             'links' => [
                 'self' => route('posts.show', ['post' => $this->id]),

@@ -29,7 +29,7 @@ class Login extends Component {
   onSubmit(e) {
     e.preventDefault();
     const { email, password } = this.state;
-    axios.post('api/login', {
+    axios.post('/api/login', {
       email,
       password
     })

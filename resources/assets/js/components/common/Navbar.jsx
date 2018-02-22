@@ -12,27 +12,30 @@ class Navbar extends Component {
   handleLogout(e) {
     e.preventDefault();
     this.props.logout();
+    this.props.history.push('/login');
   }
-  
+
   render() {
     return (
-      <Container fluid className="mb-4 px-0">
-        <div className="nav-scroller bg-white box-shadow">
-          <Nav className="nav-underline float-left">
-            <NavItem>
-              <NavLink tag={Link} to="/" active>Dashboard</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink tag={Link} to="#">Explore</NavLink>
-            </NavItem>
-          </Nav>
-          <Nav className="nav-underline float-right">
-            <NavItem>
-              <NavLink tag={Link} to="#" onClick={this.handleLogout}>Logout</NavLink>
-            </NavItem>
-          </Nav>
-        </div>
-      </Container>
+      this.props.isReady && this.props.isAuthenticated
+        ? <Container fluid className="mb-4 px-0">
+          <div className="nav-scroller bg-white box-shadow">
+            <Nav className="nav-underline float-left">
+              <NavItem>
+                <NavLink tag={Link} to="/" active>Dashboard</NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink tag={Link} to="/explore">Explore</NavLink>
+              </NavItem>
+            </Nav>
+            <Nav className="nav-underline float-right">
+              <NavItem>
+                <NavLink tag={Link} to="/logout" onClick={this.handleLogout}>Logout</NavLink>
+              </NavItem>
+            </Nav>
+          </div>
+        </Container>
+        : null
     );
   }
 }

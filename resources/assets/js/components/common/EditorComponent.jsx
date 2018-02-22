@@ -4,6 +4,7 @@ import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import Loader from './Loader';
 
 class EditorComponent extends Component {
   constructor(props) {
@@ -64,8 +65,14 @@ class EditorComponent extends Component {
   }
 
   render() {
-    return (
-      <div className="text-right my-3 p-3 bg-white rounded box-shadow">
+    const { isReady } = this.props;
+
+    const loader = (
+      <Loader {...this.props} />
+    );
+
+    const editor = (
+      <div>
         <FormGroup className="text-left">
           <Label for="title" size="lg">Write new post</Label>
           <Input
@@ -82,6 +89,16 @@ class EditorComponent extends Component {
           toolbar={this.state.toolbar}
         />
         <Button color="primary" className="mb-0" onClick={this.onPublishNow} disabled={this.state.disablePublish}>Publish now</Button>
+      </div>
+    );
+
+    return (
+      <div className="text-right my-3 p-3 bg-white rounded box-shadow">
+        {
+          isReady
+            ? editor
+            : loader
+        }
       </div>
     );
   }
