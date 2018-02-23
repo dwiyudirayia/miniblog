@@ -58,7 +58,12 @@ class Install extends Command
 
         $process = new Process('php artisan key:generate');
         $process->start();
-        $this->_showProcessOutput($process);
+        // $this->_showProcessOutput($process);
+        $process->wait();
+
+        $process = new Process('php artisan jwt:secret');
+        $process->start();
+        // $this->_showProcessOutput($process);
         $process->wait();
         
         $process = new Process('php artisan migrate --force');
