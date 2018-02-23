@@ -13,6 +13,39 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('register', 'AuthController@register');
+Route::post('login', 'AuthController@login');
+Route::get('refreshToken', 'AuthController@refreshToken');
+Route::post('recover', 'AuthController@recover');
+
+Route::group(['middleware' => ['jwt.auth']], function() {
+    Route::get('logout', 'AuthController@logout');
+
+    Route::resource('posts', 'PostController');
+    Route::resource('users', 'UserController');
+    Route::resource('comments', 'CommentController');
+
+    Route::get('/me', [
+      'uses' => 'UserController@me',
+      'as'   => 'users.me',
+    ]);
+
+    Route::group(['prefix' => 'posts'], function() {
+      Route::get('/{post}/relationships/user', [
+        'uses' => 'PostRelationshipController@user',
+        'as'   => 'posts.relationships.user',
+      ]);
+      Route::get('/{post}/user', [
+        'uses' => 'PostRelationshipController@user',
+        'as'   => 'posts.user',
+      ]);
+      Route::get('/{post}/relationships/comments', [
+        'uses' => 'PostRelationshipController@comments',
+        'as'   => 'posts.relationships.comments',
+      ]);
+      Route::get('/{post}/comments', [
+        'uses' => 'PostRelationshipController@comments',
+        'as'   => 'posts.comments',
+      ]);
+    });
 });
