@@ -2,27 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Post;
-use Validator;
+use App\Comment;
 use JWTAuth;
-use App\Http\Resources\PostResource;
-use App\Http\Resources\PostsResource;
+use Validator;
+use App\Http\Resources\CommentResource;
+use App\Http\Resources\CommentsResource;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $posts = Post::with(['user', 'comments.user'])->orderBy('created_at', 'desc');
-        $user_id = $request->user_id;
-        return $user_id
-            ? new PostsResource($posts->where('user_id', $user_id)->paginate())
-            : new PostsResource($posts->paginate());
+        return new CommentsResource(Comment::with(['user'])->paginate());
     }
 
     /**
@@ -43,25 +39,26 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        $postRequest = $request->only('title', 'content');
+        $commentRequest = $request->only('post_id', 'content');
 
         $rules = [
-            'title' => 'required|min:3|max:255',
+            'post_id' => 'required',
+            'content' => 'required'
         ];
 
-        $validator = Validator::make($postRequest, $rules);
+        $validator = Validator::make($commentRequest, $rules);
 
         if($validator->fails()) {
             return response()->json(['success'=> false, 'error'=> $validator->messages()]);
         }
 
-        $post = Post::create([
-            'title' => $request->title,
+        $comment = Comment::create([
+            'post_id' => $request->post_id,
             'content' => $request->content,
             'user_id' => JWTAuth::user()->id,
         ]);
 
-        return new PostResource($post);
+        return new CommentResource($comment);
     }
 
     /**
@@ -72,8 +69,8 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::find($id);
-        return new PostResource($post);
+        $comment = Comment::find($id);
+        return new CommentResource($comment);
     }
 
     /**

@@ -59,8 +59,8 @@ class Index extends Component {
               <ListGroupPost
                 isLoading={isLoading}
                 posts={posts}
-                noPostText={'Sorry, you have no posts yet.'}
-                title={'Your posts'} />
+                noPostText="Sorry, you have no posts yet."
+                title="Your posts" />
             </Col>
           </Row>
         </Container>

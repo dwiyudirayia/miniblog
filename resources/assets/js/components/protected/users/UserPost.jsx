@@ -1,29 +1,53 @@
 import React, { Component } from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import { Redirect, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Navbar from '../../common/Navbar';
 import ListGroupPost from '../../common/ListGroupPost';
 
-class Explore extends Component {
+class UserPost extends Component {
   constructor(props) {
     super(props);
+    const { match: { params } } = this.props;
+
     this.state = {
-      posts: []
+      id: params.userId ? params.userId : null,
+      posts: [],
+      user: null,
+      userIsLoading: true,
+      postIsLoading: true,
     }
 
     this.handlePublished = this.handlePublished.bind(this);
   }
 
   componentDidMount() {
+    this.loadUser();
     this.load();
   }
 
   load() {
-    return axios.get(`/api/posts`)
+    const { id } = this.state;
+    return axios.get(`/api/posts/?user_id=${id}`)
       .then((response) => {
         const { data } = response.data;
         this.setState({
-          posts: data
+          posts: data,
+          postIsLoading: false
+        });
+      })
+      .catch((error) => {
+        console.log('Error!', error);
+      });
+  }
+
+  loadUser() {
+    const { id } = this.state;
+    return axios.get(`/api/users/${id}`)
+      .then((response) => {
+        const { data } = response.data;
+        this.setState({
+          user: data,
+          userIsLoading: false
         });
       })
       .catch((error) => {
@@ -41,8 +65,11 @@ class Explore extends Component {
   }
 
   render() {
-    const { posts } = this.state;
-    const { isLoading } = this.props;
+    const { user, posts, postIsLoading, userIsLoading } = this.state;
+
+    const title = !userIsLoading
+      ? `${user.attributes.name}'s posts`
+      : null;
 
     return (
       <div>
@@ -51,10 +78,10 @@ class Explore extends Component {
           <Row className="justify-content-center">
             <Col md="8">
               <ListGroupPost
-                isLoading={isLoading}
+                isLoading={postIsLoading}
                 posts={posts}
                 noPostText="Sorry, there are no posts yet."
-                title="Explore posts" />
+                title={title} />
             </Col>
           </Row>
         </Container>
@@ -63,4 +90,4 @@ class Explore extends Component {
   }
 }
 
-export default Explore;
+export default UserPost;

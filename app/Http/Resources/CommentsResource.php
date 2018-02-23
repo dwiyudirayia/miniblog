@@ -3,11 +3,10 @@
 namespace App\Http\Resources;
 
 use App\User;
-use App\Comment;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;
 
-class PostsResource extends ResourceCollection
+class CommentsResource extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -18,29 +17,20 @@ class PostsResource extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => PostResource::collection($this->collection),
+            'data' => CommentResource::collection($this->collection),
         ];
     }
-
+    
     public function with($request)
     {
-        $users  = $this->collection->map(
+        $included  = $this->collection->map(
             function ($post) {
                 return $post->user;
             }
-        );
-
-        $comments = $this->collection->flatMap(
-            function ($post) {
-                return $post->comments;
-            }
-        );
-
-        $included = $users->merge($comments)->unique();
-        
+        )->unique();
         return [
-            'links'    => [
-                'self' => route('posts.index'),
+            'links' => [
+                'self' => route('comments.index'),
             ],
             'included' => $this->withIncluded($included),
         ];
@@ -52,9 +42,6 @@ class PostsResource extends ResourceCollection
             function ($include) {
                 if ($include instanceof User) {
                     return new UserResource($include);
-                }
-                if ($include instanceof Comment) {
-                    return new CommentResource($include);
                 }
             }
         );

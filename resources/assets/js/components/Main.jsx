@@ -8,6 +8,7 @@ import Register from './public/auth/Register';
 import Error404 from './public/errors/404';
 
 import PostDetail from './protected/posts/PostDetail';
+import UserPost from './protected/users/UserPost';
 
 const PrivateRoute = ({ component: Component, logout, isAuthenticated, isReady, isLoading, token, user, ...rest }) => (
   <Route
@@ -129,7 +130,7 @@ class Main extends Component {
   }
 
   refresh() {
-    return axios.get('api/refreshToken')
+    return axios.get('/api/refreshToken')
       .then((response) => {
         const token = response.data.token;
         this.authenticate(token);
@@ -158,6 +159,7 @@ class Main extends Component {
           <PrivateRoute path="/explore" component={Explore} logout={this.logout} {...this.state} />
 
           <PrivateRoute path="/posts/:postId" component={PostDetail} logout={this.logout} {...this.state} />
+          <PrivateRoute path="/users/:userId" component={UserPost} logout={this.logout} {...this.state} />
 
           {/* This should be at the bottom */}
           <Route render={(props) => <Error404 logout={this.logout} {...this.state} {...props} />} />
