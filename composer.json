@@ -1,8 +1,9 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "name": "miniblog/miniblog",
+    "description": "Simple Mini Private Blog, powered by Laravel and Reactjs.",
+    "keywords": ["miniblog", "framework", "laravel", "react"],
     "license": "MIT",
+    "version": "1.0.0-beta.0",
     "type": "project",
     "require": {
         "php": ">=7.1.3",
